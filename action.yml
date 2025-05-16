@@ -13,6 +13,9 @@ inputs:
   github-token:
     description: "Used to pull Windows builds from GyanD/codexffmpeg. Since there's a default, this is typically not supplied by the user."
     default: ${{ github.server_url == 'https://github.com' && github.token || '' }}
+  linux-base-url:
+    description: "Base URL for Linux builds. The path conventions of https://johnvansickle.com/ are used."
+    default: https://johnvansickle.com
 outputs:
   ffmpeg-version:
     description: The installed ffmpeg version

@@ -17,6 +17,7 @@ export class JohnVanSickleInstaller {
     this.arch = arch;
     this.skipIntegrityCheck = skipIntegrityCheck;
     this.toolCacheDir = toolCacheDir;
+    this.baseUrl = core.getInput("linux-base-url") || "https://johnvansickle.com";
     assert.ok(this.arch === 'x64' || this.arch === 'arm64', 'Only x64 and arm64 are supported');
     assert.strictEqual(linkingType, 'static', 'Only static linking is supported');
   }
@@ -26,8 +27,8 @@ export class JohnVanSickleInstaller {
   async getLatestRelease() {
     const isGitBuild = this.version.toLowerCase() === 'git';
     const url = isGitBuild
-      ? 'https://johnvansickle.com/ffmpeg/git-readme.txt'
-      : 'https://johnvansickle.com/ffmpeg/release-readme.txt';
+      ? `${this.baseUrl}/ffmpeg/git-readme.txt`
+      : `${this.baseUrl}/ffmpeg/release-readme.txt`;
     const res = await fetch(url, {
       headers: {
         'user-agent': USER_AGENT,
@@ -40,8 +41,8 @@ export class JohnVanSickleInstaller {
     core.debug(`Found latest johnvansickle release: ${versionMatch}`);
     const version = normalizeVersion(versionMatch[1].trim(), isGitBuild);
     const downloadUrl = isGitBuild
-      ? `https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-${this.getArch()}-static.tar.xz`
-      : `https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-${this.getArch()}-static.tar.xz`;
+      ? `${this.baseUrl}/ffmpeg/builds/ffmpeg-git-${this.getArch()}-static.tar.xz`
+      : `${this.baseUrl}/ffmpeg/releases/ffmpeg-release-${this.getArch()}-static.tar.xz`;
     return {
       version,
       downloadUrl: [downloadUrl],
@@ -62,13 +63,13 @@ export class JohnVanSickleInstaller {
       redirect: 'manual',
     };
     let res = await fetch(
-      `https://johnvansickle.com/ffmpeg/releases/ffmpeg-${version}-${this.getArch()}-static.tar.xz`,
+      `${this.baseUrl}/ffmpeg/releases/ffmpeg-${version}-${this.getArch()}-static.tar.xz`,
       init,
     );
     // Check in old releases if not available
     if (!res.ok) {
       res = await fetch(
-        `https://johnvansickle.com/ffmpeg/old-releases/ffmpeg-${version}-${this.getArch()}-static.tar.xz`,
+        `${this.baseUrl}/ffmpeg/old-releases/ffmpeg-${version}-${this.getArch()}-static.tar.xz`,
         init,
       );
     }
